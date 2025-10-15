@@ -2,11 +2,12 @@
 from fastapi import FastAPI
 import asyncio
 from typing import Any
-from go2_webrtc_driver.constants import RTC_TOPIC, SPORT_CMD, WebRTCConnectionMethod
-from go2_webrtc_driver.webrtc_driver import Go2WebRTCConnection
+
+from unitree_webrtc_connect.constants import RTC_TOPIC, SPORT_CMD, WebRTCConnectionMethod
+from unitree_webrtc_connect.webrtc_driver import UnitreeWebRTCConnection
 
 app = FastAPI()
-conn = Go2WebRTCConnection(WebRTCConnectionMethod.LocalSTA, ip="192.168.100.101")
+conn = UnitreeWebRTCConnection(WebRTCConnectionMethod.LocalSTA, ip="192.168.100.101")
 
 @app.post("/stand_up")
 async def stand_up():
