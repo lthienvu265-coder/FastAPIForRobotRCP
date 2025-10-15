@@ -49,3 +49,28 @@ async def status():
         return {"status": "ok", "data": current_message}
     except asyncio.TimeoutError:
         return {"status": "timeout", "message": "No message received within 5 seconds"}
+    
+@app.post("/lowstate")
+async def lowstate():
+    await conn.connect()
+
+    loop = asyncio.get_running_loop()
+    future: asyncio.Future[Any] = loop.create_future()
+
+    def lowstate_callback(message):
+        # Set result only if it hasn’t been set yet
+        if not future.done():
+            future.set_result(message["data"])
+
+    # Subscribe to your topic
+    conn.datachannel.pub_sub.subscribe(
+        RTC_TOPIC["LOW_STATE"],
+        lowstate_callback
+    )
+
+    try:
+        # Wait for the callback or timeout
+        current_message = await asyncio.wait_for(future, timeout=5.0)
+        return {"status": "ok", "data": current_message}
+    except asyncio.TimeoutError:
+        return {"status": "timeout", "message": "No message received within 5 seconds"}
